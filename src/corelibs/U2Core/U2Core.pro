@@ -185,6 +185,7 @@ HEADERS += src/cmdline/CMDLineCoreOptions.h \
            src/tasks/RemoveAnnotationsTask.h \
            src/tasks/RemoveDocumentTask.h \
            src/tasks/ReverseSequenceTask.h \
+           src/tasks/SaveAlignmentTask.h \
            src/tasks/SaveDocumentStreamingTask.h \
            src/tasks/SaveDocumentTask.h \
            src/tasks/ScriptTask.h \
@@ -380,6 +381,7 @@ SOURCES += src/cmdline/CMDLineCoreOptions.cpp \
            src/tasks/RemoveAnnotationsTask.cpp \
            src/tasks/RemoveDocumentTask.cpp \
            src/tasks/ReverseSequenceTask.cpp \
+           src/tasks/SaveAlignmentTask.cpp \
            src/tasks/SaveDocumentStreamingTask.cpp \
            src/tasks/SaveDocumentTask.cpp \
            src/tasks/ScriptTask.cpp \

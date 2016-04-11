@@ -28,6 +28,7 @@
 #include <U2Core/IOAdapter.h>
 #include <U2Core/GObjectReference.h>
 #include <U2Core/MAlignment.h>
+#include <U2Core/SaveAlignmentTask.h>
 #include <U2Core/SaveDocumentTask.h>
 #include <U2Core/Task.h>
 

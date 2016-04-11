@@ -30,6 +30,7 @@
 #include <U2Algorithm/PhyTreeGeneratorTask.h>
 #include <U2Core/ExternalToolRunTask.h>
 #include <U2Core/PhyTreeObject.h>
+#include <U2Core/SaveAlignmentTask.h>
 
 namespace U2 {
 

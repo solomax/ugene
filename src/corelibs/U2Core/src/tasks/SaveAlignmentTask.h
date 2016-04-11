@@ -19,35 +19,38 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef _U2_EXPORT_PLUGIN_TASKS_H_
-#define _U2_EXPORT_PLUGIN_TASKS_H_
+#ifndef _U2_SAVE_ALIGNMENT_H_
+#define _U2_SAVE_ALIGNMENT_H_
 
 #include <U2Core/BaseDocumentFormats.h>
-
-#include <U2Core/Task.h>
 #include <U2Core/DocumentModel.h>
+#include <U2Core/Task.h>
 #include <U2Core/MAlignment.h>
 
 namespace U2 {
 
-/**Export Alignment to Sequence Format (FASTA, ...) */
-class SaveMSA2SequencesTask : public Task {
+class Document;
+
+/** Save Alignment Task (to CLUSTAL, NEXUS, ...) */
+class U2CORE_EXPORT SaveAlignmentTask : public Task {
     Q_OBJECT
 public:
-    SaveMSA2SequencesTask(const MAlignment& ma, const QString& url, bool trimAli, DocumentFormatId format);
+    SaveAlignmentTask(const MAlignment& ma, const QString& fileName, DocumentFormatId f, const QVariantMap& hints = QVariantMap());
 
     void run();
 
     virtual Document* getDocument() const {return doc.data();}
 
+    MAlignment& getMAlignment() {return ma;}
+
 private:
     MAlignment              ma;
-    QString                 url;
-    bool                    trimAli;
-    QString                 format;
+    QString                 fileName;
+    QVariantMap             hints;
+    DocumentFormatId        format;
     QScopedPointer<Document> doc;
 };
 
-}//namespace
+} // U2
 
-#endif
+#endif // _U2_SAVE_ALIGNMENT_H_

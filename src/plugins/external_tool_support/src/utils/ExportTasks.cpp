@@ -48,43 +48,6 @@
 namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
-// DNAExportAlignmentTask
-SaveAlignmentTask::SaveAlignmentTask(const MAlignment& _ma, const QString& _fileName, DocumentFormatId _f, const QVariantMap& _hints)
-: Task("", TaskFlag_None),
-  ma(_ma),
-  fileName(_fileName),
-  hints(_hints),
-  format(_f)
-{
-    GCOUNTER( cvar, tvar, "ExportAlignmentTask" );
-    setTaskName(tr("Export alignment to '%1'").arg(QFileInfo(fileName).fileName()));
-    setVerboseLogMode(true);
-
-    if (ma.isEmpty()) {
-        setError(tr("An alignment is empty"));
-    }
-}
-
-void SaveAlignmentTask::run() {
-    DocumentFormatRegistry* r = AppContext::getDocumentFormatRegistry();
-    DocumentFormat* f = r->getFormatById(format);
-    IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(fileName));
-    doc.reset(f->createNewLoadedDocument(iof, fileName, stateInfo));
-
-    MAlignmentObject* obj = MAlignmentImporter::createAlignment(doc->getDbiRef(), ma, stateInfo);
-    CHECK_OP(stateInfo, );
-
-    GHints* docHints = doc->getGHints();
-    foreach(const QString& key, hints.keys()){
-        docHints->set(key, hints[key]);
-    }
-
-    doc->addObject(obj);
-    f->storeDocument(doc.data(), stateInfo);
-}
-
-
-//////////////////////////////////////////////////////////////////////////
 // export alignment  2 sequence format
 
 SaveMSA2SequencesTask::SaveMSA2SequencesTask(const MAlignment& _ma, const QString& _url, bool _trimAli, DocumentFormatId _format)
