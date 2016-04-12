@@ -45,7 +45,6 @@
 #include <util/uhmm3Utilities.h>
 #include <format/uHMMFormat.h>
 #include <gobject/uHMMObject.h>
-#include <build/uHMM3BuildTask.h>
 
 #include <U2Gui/DialogUtils.h>
 

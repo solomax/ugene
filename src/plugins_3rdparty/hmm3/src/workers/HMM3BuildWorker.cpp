@@ -21,7 +21,6 @@
 
 #include "HMM3BuildWorker.h"
 #include "HMM3IOWorker.h"
-#include "build/uHMM3BuildTask.h"
 
 #include <U2Lang/Datatype.h>
 #include <U2Lang/IntegralBusModel.h>
@@ -39,6 +38,8 @@
 #include <U2Core/Log.h>
 #include <U2Core/TaskSignalMapper.h>
 #include <U2Core/FailTask.h>
+
+#include <build/Hmmer3BuildTask.h>
 
 /* TRANSLATOR U2::LocalWorkflow::HMM3BuildWorker */
 
@@ -147,8 +148,11 @@ Task* HMM3BuildWorker::tick() {
         QScopedPointer<MAlignmentObject> msaObj(StorageUtils::getMsaObject(context->getDataStorage(), msaId));
         SAFE_POINT(!msaObj.isNull(), "NULL MSA Object!", NULL);
         const MAlignment &msa = msaObj->getMAlignment();
-        
-        Task* t = new UHMM3BuildTask(cfg, msa);
+
+        Hmmer3BuildSettings settings;
+        settings.inner = cfg;
+        settings.loadProfile = true;
+        Task* t = new Hmmer3BuildTask(settings, msa);
         connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
         return t;
     } else if (input->isEnded()) {
@@ -171,7 +175,7 @@ void HMM3BuildWorker::sl_taskFinished() {
 }
 
 void HMM3BuildWorker::sl_taskFinished(Task* t) {
-    UHMM3BuildTask* build = qobject_cast<UHMM3BuildTask*>(t);
+    Hmmer3BuildTask* build = qobject_cast<Hmmer3BuildTask*>(t);
     SAFE_POINT( NULL != t, "Invalid task is encountered", );
     if ( t->isCanceled( ) ) {
         return;

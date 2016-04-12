@@ -19,40 +19,53 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef _U2_SAVE_ALIGNMENT_H_
-#define _U2_SAVE_ALIGNMENT_H_
+#ifndef _U2_HMMER3_BUILD_TASK_H_
+#define _U2_HMMER3_BUILD_TASK_H_
 
-#include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/DocumentModel.h>
-#include <U2Core/Task.h>
 #include <U2Core/MAlignment.h>
+#include <U2Core/Task.h>
+#include <hmmer3/hmmer.h>
 
 namespace U2 {
 
 class Document;
+class ExternalToolRunTask;
+class LoadDocumentTask;
+class SaveAlignmentTask;
 
-/** Save Alignment Task (to CLUSTAL, NEXUS, ...) */
-class U2CORE_EXPORT SaveAlignmentTask : public Task {
+class Hmmer3BuildSettings {
+public:
+    Hmmer3BuildSettings();
+
+    UHMM3BuildSettings inner;
+    QString profileUrl;
+    bool loadProfile;
+};
+
+class Hmmer3BuildTask : public Task {
     Q_OBJECT
 public:
-    SaveAlignmentTask(const MAlignment& ma, const QString& fileName, DocumentFormatId f, const QVariantMap& hints = QVariantMap());
+    Hmmer3BuildTask(const Hmmer3BuildSettings &settings, const MAlignment &msa);
+    ~Hmmer3BuildTask();
 
-    void run();
-
-    virtual Document* getDocument() const {return doc.data();}
-
-    MAlignment& getMAlignment() {return ma;}
-
-    const QString & getUrl() const {return fileName;}
+    void prepare();
+    QList<Task*> onSubTaskFinished(Task *subTask);
+    QString generateReport() const;
+    P7_HMM * takeHMM();
 
 private:
-    MAlignment              ma;
-    QString                 fileName;
-    QVariantMap             hints;
-    DocumentFormatId        format;
-    QScopedPointer<Document> doc;
+    void takeLoadedProfile(Document *doc);
+    Task * createBuildTask();
+
+private:
+    Hmmer3BuildSettings settings;
+    MAlignment msa;
+    P7_HMM *profile;
+    SaveAlignmentTask *saveTask;
+    ExternalToolRunTask *hmmerTask;
+    LoadDocumentTask *loadTask;
 };
 
 } // U2
 
-#endif // _U2_SAVE_ALIGNMENT_H_
+#endif // _U2_HMMER3_BUILD_TASK_H_

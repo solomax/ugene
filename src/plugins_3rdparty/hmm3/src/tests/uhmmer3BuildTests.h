@@ -27,7 +27,7 @@
 #include <U2Test/XMLTestUtils.h>
 #include <U2Core/Task.h>
 
-#include <build/uHMM3BuildTask.h>
+#include <build/Hmmer3BuildFromFileTask.h>
 
 namespace U2 {
 
@@ -68,8 +68,8 @@ private:
     QString                 inFile;
     QString                 outFile;
     bool                    delOutFile;
-    UHMM3BuildToFileTask*   buildTask;
-    UHMM3BuildTaskSettings  bldSettings;
+    Hmmer3BuildFromFileTask*buildTask;
+    Hmmer3BuildSettings     bldSettings;
 
 }; // GTest_UHMMER3Build
 

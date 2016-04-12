@@ -47,6 +47,8 @@ public:
     
     static QList<const P7_HMM *> getHmmsFromDocument( Document* doc, TaskStateInfo& ti );
 
+    static QList<P7_HMM *> takeHmmsFromDocument( Document* doc, TaskStateInfo& ti );
+
     static QList< GObject* > getDocObjects( const QList<const  P7_HMM* >& hmms );
 
     static Document * getSavingDocument( const QList<const  P7_HMM* >& hmms, const QString & outfile );

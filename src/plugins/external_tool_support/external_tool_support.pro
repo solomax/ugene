@@ -90,6 +90,7 @@ HEADERS += src/ETSProjectViewItemsContoller.h \
            src/fastqc/FastqcSupport.h \
            src/fastqc/FastqcTask.h \
            src/fastqc/FastqcWorker.h \
+           src/hmmer/Hmmer3Support.h \
            src/java/JavaSupport.h \
            src/macs/MACSSettings.h \
            src/macs/MACSSupport.h \
@@ -266,6 +267,7 @@ SOURCES += src/ETSProjectViewItemsContoller.cpp \
            src/fastqc/FastqcSupport.cpp \
            src/fastqc/FastqcTask.cpp \
            src/fastqc/FastqcWorker.cpp \
+           src/hmmer/Hmmer3Support.cpp \
            src/java/JavaSupport.cpp \
            src/macs/MACSSettings.cpp \
            src/macs/MACSSupport.cpp \

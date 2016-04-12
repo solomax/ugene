@@ -29,6 +29,9 @@
 #include <U2Gui/LastUsedDirHelper.h>
 #include <U2Gui/SaveDocumentController.h>
 #include <U2Gui/U2FileDialog.h>
+#include <build/Hmmer3BuildFromFileTask.h>
+#include <build/Hmmer3BuildTask.h>
+#include <format/uHMMFormat.h>
 
 #include "uHMM3BuildDialogImpl.h"
 #include "gobject/uHMMObject.h"
@@ -175,7 +178,7 @@ void UHMM3BuildDialogImpl::getModelValues() {
         assert( false );
     }
     
-    model.buildSettings.outFile = saveController->getSaveFileName();
+    model.buildSettings.profileUrl = saveController->getSaveFileName();
     model.inputFile = maLoadFromFileEdit->text();
 }
 
@@ -184,7 +187,7 @@ QString UHMM3BuildDialogImpl::checkModel() {
     if( !model.alignmentUsing && model.inputFile.isEmpty() ) {
         return tr( "input file is empty" );
     }
-    if( model.buildSettings.outFile.isEmpty() ) {
+    if( model.buildSettings.profileUrl.isEmpty() ) {
         return tr( "output hmm file is empty" );
     }
     return QString();
@@ -200,9 +203,9 @@ void UHMM3BuildDialogImpl::sl_buildButtonClicked() {
     
     Task * buildTask = NULL;
     if( model.alignmentUsing ) {
-        buildTask = new UHMM3BuildToFileTask( model.buildSettings, model.alignment );
+        buildTask = new Hmmer3BuildTask(model.buildSettings, model.alignment);
     } else {
-        buildTask = new UHMM3BuildToFileTask( model.buildSettings, model.inputFile );
+        buildTask = new Hmmer3BuildFromFileTask(model.buildSettings, model.inputFile);
     }
     assert( NULL != buildTask );
     

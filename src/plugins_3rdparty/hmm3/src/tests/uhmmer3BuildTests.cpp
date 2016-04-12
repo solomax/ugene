@@ -237,7 +237,7 @@ void GTest_UHMMER3Build::setAndCheckArgs() {
     outFile = env->getVar( "TEMP_DATA_DIR" ) + "/" + outFile;
 
     /* Build settings */
-    bldSettings.outFile = outFile;
+    bldSettings.profileUrl = outFile;
 }
 
 void GTest_UHMMER3Build::prepare() {
@@ -246,7 +246,7 @@ void GTest_UHMMER3Build::prepare() {
         return;
     }
 
-    buildTask = new UHMM3BuildToFileTask( bldSettings, inFile );
+    buildTask = new Hmmer3BuildFromFileTask( bldSettings, inFile );
     addSubTask( buildTask );
 }
 

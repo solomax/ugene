@@ -2,9 +2,10 @@ include (hmm3.pri)
 
 # Input
 HEADERS += src/uHMM3Plugin.h \
+           src/build/Hmmer3BuildFromFileTask.h \
+           src/build/Hmmer3BuildTask.h \
            src/build/uhmm3build.h \
            src/build/uHMM3BuildDialogImpl.h \
-           src/build/uHMM3BuildTask.h \
            src/format/uHMMFormat.h \
            src/format/uHMMFormatReader.h \
            src/gobject/uHMMObject.h \
@@ -62,9 +63,10 @@ FORMS += src/build/UHMM3BuildDialog.ui \
          src/phmmer/UHMM3PhmmerDialog.ui \
          src/search/UHMM3SearchDialog.ui
 SOURCES += src/uHMM3Plugin.cpp \
+           src/build/Hmmer3BuildFromFileTask.cpp \
+           src/build/Hmmer3BuildTask.cpp \
            src/build/uhmm3build.cpp \
            src/build/uHMM3BuildDialogImpl.cpp \
-           src/build/uHMM3BuildTask.cpp \
            src/format/uHMMFormat.cpp \
            src/format/uHMMFormatReader.cpp \
            src/gobject/uHMMObject.cpp \

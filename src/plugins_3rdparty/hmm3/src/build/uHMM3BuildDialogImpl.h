@@ -23,15 +23,15 @@
 #define _GB2_UHMM3_BUILD_DLG_IMPL_H_
 
 #include <QDialog>
-#include "uHMM3BuildTask.h"
 #include <ui_UHMM3BuildDialog.h>
+#include <build/Hmmer3BuildTask.h>
 
 namespace U2 {
 
 class SaveDocumentController;
 
 struct UHMM3BuildDialogModel {
-    UHMM3BuildTaskSettings  buildSettings;
+    Hmmer3BuildSettings  buildSettings;
     
     /* one of this is used */
     QString                 inputFile;

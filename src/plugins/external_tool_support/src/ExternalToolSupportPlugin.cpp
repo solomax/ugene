@@ -95,6 +95,7 @@
 #include "bwa/BwaTask.h"
 #include "bwa/BwaSettingsWidget.h"
 #include "bwa/bwa_tests/bwaTests.h"
+#include "hmmer/Hmmer3Support.h"
 #include "samtools/SamToolsExtToolSupport.h"
 #include "samtools/TabixSupport.h"
 #include "vcftools/VcfConsensusWorker.h"
@@ -370,6 +371,10 @@ ExternalToolSupportPlugin::ExternalToolSupportPlugin() :
     // BWA
     BwaSupport* bwaSupport = new BwaSupport(ET_BWA);
     etRegistry->registerEntry(bwaSupport);
+
+    // HMMER3
+    Hmmer3Support *hmmer3Support = new Hmmer3Support(Hmmer3Support::BUILD_TOOL);
+    etRegistry->registerEntry(hmmer3Support);
 
     // SPAdes
     SpadesSupport* spadesSupport = new SpadesSupport(ET_SPADES);

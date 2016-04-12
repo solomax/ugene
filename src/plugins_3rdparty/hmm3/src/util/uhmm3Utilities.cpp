@@ -214,6 +214,24 @@ QList<const P7_HMM *> UHMM3Utilities::getHmmsFromDocument( Document* doc, TaskSt
     return res;
 }
 
+QList<P7_HMM *> UHMM3Utilities::takeHmmsFromDocument(Document* doc, TaskStateInfo& ti) {
+    QList<P7_HMM *> res;
+    SAFE_POINT(NULL != doc, "UHMM3Utilities::getHmmsFromDocument:: doc is NULL", res);
+
+    const QList<GObject*>& gobjects = doc->getObjects();
+    foreach(GObject* gobj, gobjects){
+        UHMMObject* obj = qobject_cast<UHMMObject*>(gobj);
+        if (NULL != obj) {
+            res.append((P7_HMM*)obj->takeHMM());
+        }
+    }
+
+    if (res.isEmpty()){
+        ti.setError("no_hmm_found_in_file");
+    }
+    return res;
+}
+
 QList< GObject* > UHMM3Utilities::getDocObjects( const QList< const P7_HMM* >& hmms ){
     QList< GObject* > res;
     foreach(const  P7_HMM* hmm, hmms ) {
