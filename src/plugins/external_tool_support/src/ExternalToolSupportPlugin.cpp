@@ -373,8 +373,10 @@ ExternalToolSupportPlugin::ExternalToolSupportPlugin() :
     etRegistry->registerEntry(bwaSupport);
 
     // HMMER3
-    Hmmer3Support *hmmer3Support = new Hmmer3Support(Hmmer3Support::BUILD_TOOL);
-    etRegistry->registerEntry(hmmer3Support);
+    Hmmer3Support *hmmer3BuildSupport = new Hmmer3Support(Hmmer3Support::BUILD_TOOL);
+    Hmmer3Support *hmmer3SearchSupport = new Hmmer3Support(Hmmer3Support::SEARCH_TOOL);
+    etRegistry->registerEntry(hmmer3BuildSupport);
+    etRegistry->registerEntry(hmmer3SearchSupport);
 
     // SPAdes
     SpadesSupport* spadesSupport = new SpadesSupport(ET_SPADES);

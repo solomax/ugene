@@ -31,6 +31,7 @@ public:
     Hmmer3Support(const QString &name);
 
     static const QString BUILD_TOOL;
+    static const QString SEARCH_TOOL;
 };
 
 } // U2

@@ -26,6 +26,7 @@
 namespace U2 {
 
 const QString Hmmer3Support::BUILD_TOOL = "HMMER 3 build";
+const QString Hmmer3Support::SEARCH_TOOL = "HMMER 3 search";
 
 Hmmer3Support::Hmmer3Support(const QString &name)
 : ExternalTool(name)
@@ -50,6 +51,19 @@ Hmmer3Support::Hmmer3Support(const QString &name)
         validationArguments << "-h";
         validMessage = "hmmbuild";
         description = tr("<i>HMMER 3 build</i> constructs HMM profiles from multiple sequence alignments.");
+    }
+
+    // HMM3-search
+    if (name == SEARCH_TOOL) {
+#ifdef Q_OS_WIN
+        executableFileName = "hmmsearch.exe";
+#elif defined(Q_OS_UNIX)
+        executableFileName = "hmmsearch";
+#endif
+
+        validationArguments << "-h";
+        validMessage = "hmmsearch";
+        description = tr("<i>HMMER 3 search</i> searches profile(s) against a sequence database.");
     }
 }
 
