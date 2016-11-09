@@ -23,6 +23,7 @@
 #include <QtCore/QEventLoop>
 #include <QtCore/QTimer>
 #include <QtCore/QUrl>
+#include <QtCore/QBuffer>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
@@ -351,37 +352,50 @@ BaseEntrezRequestTask::~BaseEntrezRequestTask( )
     networkManager = NULL;
 }
 
-void BaseEntrezRequestTask::sl_onError(QNetworkReply::NetworkError error)
-{
-    stateInfo.setError( QString( "NetworkReply error %1" ).arg( error ) );
-    loop->exit( );
+void BaseEntrezRequestTask::sl_onError(QNetworkReply::NetworkError error) {
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (NULL == reply) {
+        stateInfo.setError(QString("QNetworkReply is NULL, error code: %1").arg(error));
+    } else {
+        stateInfo.setError(QString("QNetworkReply error: %1").arg(reply->errorString()));
+    }
+    loop->exit();
 }
 
-void BaseEntrezRequestTask::sl_uploadProgress( qint64 bytesSent, qint64 bytesTotal)
-{
+void BaseEntrezRequestTask::sl_uploadProgress(qint64 bytesSent, qint64 bytesTotal) {
     stateInfo.progress = bytesSent / bytesTotal * 100;
 }
 
-void BaseEntrezRequestTask::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth){
+void BaseEntrezRequestTask::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth) {
+    ioLog.trace("Proxy authentication required");
     auth->setUser(proxy.user());
     auth->setPassword(proxy.password());
     disconnect(this, SLOT(onProxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*)));
 }
 
-void BaseEntrezRequestTask::createLoopAndNetworkManager(const QString& queryString)
-{
+void BaseEntrezRequestTask::sl_log() {
+    if (loop->isRunning()) {
+        ioLog.trace("Still waiting for a reply...");
+        runLogTimer();
+    }
+}
+
+void BaseEntrezRequestTask::createLoopAndNetworkManager(const QString& queryString) {
     SAFE_POINT( NULL == networkManager, "Attempting to initialize network manager twice", );
     networkManager = new QNetworkAccessManager;
-    connect( networkManager, SIGNAL( finished( QNetworkReply * ) ), this,
-        SLOT( sl_replyFinished( QNetworkReply* ) ) );
+    connect(networkManager, SIGNAL(finished(QNetworkReply *)), this, SLOT(sl_replyFinished(QNetworkReply *)));
 
-    NetworkConfiguration* nc = AppContext::getAppSettings( )->getNetworkConfiguration( );
-    QNetworkProxy proxy = nc->getProxyByUrl( queryString );
-    networkManager->setProxy( proxy );
+    NetworkConfiguration* nc = AppContext::getAppSettings()->getNetworkConfiguration();
+    QNetworkProxy proxy = nc->getProxyByUrl(queryString);
+    networkManager->setProxy(proxy);
     connect(networkManager, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*)), this, SLOT(onProxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*)));
 
     SAFE_POINT( NULL == loop, "Attempting to initialize loop twice", );
     loop = new QEventLoop;
+}
+
+void BaseEntrezRequestTask::runLogTimer() {
+    QTimer::singleShot(LOG_TIMEOUT, SLOT(sl_log()));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -394,50 +408,53 @@ LoadDataFromEntrezTask::LoadDataFromEntrezTask( const QString& dbId, const QStri
 
 }
 
-void LoadDataFromEntrezTask::run( )
-{
+void LoadDataFromEntrezTask::run() {
     stateInfo.progress = 0;
     ioLog.trace( "Load data from Entrez started..." );
 
-    ioLog.trace( "Downloading file..." );
+    ioLog.trace("Downloading file...");
     // Step one: download the file
-    QString traceFetchUrl = QString( EntrezUtils::NCBI_EFETCH_URL ).arg( db ).arg( accNumber ).arg( format );
+    QString traceFetchUrl = QString(EntrezUtils::NCBI_EFETCH_URL).arg(db).arg(accNumber).arg(format);
 
     createLoopAndNetworkManager(traceFetchUrl);
 
-    ioLog.trace( traceFetchUrl );
-    QUrl requestUrl( EntrezUtils::NCBI_EFETCH_URL.arg( db ).arg( accNumber ).arg( format ) );
+    ioLog.trace(traceFetchUrl);
+    QUrl requestUrl(EntrezUtils::NCBI_EFETCH_URL.arg(db).arg(accNumber).arg(format));
     downloadReply = networkManager->get( QNetworkRequest( requestUrl ) );
-    connect( downloadReply, SIGNAL( error( QNetworkReply::NetworkError ) ),
-        this, SLOT( sl_onError( QNetworkReply::NetworkError ) ) );
-    connect( downloadReply, SIGNAL(uploadProgress( qint64, qint64 ) ),
-        this, SLOT( sl_uploadProgress( qint64, qint64 ) ) );
+    connect(downloadReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(sl_onError(QNetworkReply::NetworkError)));
+    connect(downloadReply, SIGNAL(uploadProgress(qint64, qint64)), this, SLOT(sl_uploadProgress(qint64, qint64)));
 
+    runLogTimer();
     QTimer::singleShot(100, this, SLOT(sl_cancelCheck()));
-    loop->exec( );
+    loop->exec();
 
-    if ( !isCanceled( ) ) {
-        ioLog.trace( "Download finished." );
+    if (!isCanceled()) {
+        ioLog.trace("Download finished.");
 
-        QByteArray result = downloadReply->readAll( );
-        if ( ( result.size( ) < 100 ) && result.contains( "Nothing has been found" ) ) {
-            setError( tr( "Sequence with ID=%1 is not found." ).arg( accNumber ) );
+        qint64 dataLength = downloadReply->bytesAvailable();
+        QByteArray result = downloadReply->peek(dataLength);
+        ioLog.trace(QString("Result data size: %1").arg(dataLength));
+        ioLog.trace(QString("Result data start: %1").arg(QString(result.left(400)).toHtmlEscaped()));
+
+        if ((result.size() < 100) && result.contains("Nothing has been found")) {
+            setError(tr("Sequence with ID=%1 is not found.").arg(accNumber));
             return;
         }
 
-        QFile downloadedFile( fullPath );
-        if ( !downloadedFile.open( QIODevice::WriteOnly ) ) {
-            stateInfo.setError( "Cannot open file to write!" );
+        QFile downloadedFile(fullPath);
+        if (!downloadedFile.open(QIODevice::WriteOnly)) {
+            stateInfo.setError("Cannot open file to write!");
             return;
         }
-        downloadedFile.write( result );
-        downloadedFile.close( );
+        downloadedFile.write(result);
+        downloadedFile.close();
     }
 }
 
 void LoadDataFromEntrezTask::sl_cancelCheck() {
     if (isCanceled()) {
         if (loop->isRunning()) {
+            ioLog.trace("Task is cancelled");
             loop->exit();
         }
     } else {
@@ -445,13 +462,14 @@ void LoadDataFromEntrezTask::sl_cancelCheck() {
     }
 }
 
-void LoadDataFromEntrezTask::sl_replyFinished( QNetworkReply* reply )
-{
-    if ( isCanceled( ) ) {
-        loop->exit( );
+void LoadDataFromEntrezTask::sl_replyFinished(QNetworkReply* reply) {
+    if (isCanceled()) {
+        loop->exit();
         return;
     }
-    if ( reply == searchReply ) {
+
+    if (reply == searchReply) {
+        ioLog.trace("A reply for search request has come");
         QXmlInputSource source(reply);
         ESearchResultHandler* handler = new ESearchResultHandler;
         xmlReader.setContentHandler(handler);
@@ -459,11 +477,20 @@ void LoadDataFromEntrezTask::sl_replyFinished( QNetworkReply* reply )
         bool ok = xmlReader.parse(source);
         if ( !ok ) {
             assert( false );
-            stateInfo.setError( "Parsing eSearch result failed" );
+            stateInfo.setError(QString("Parsing eSearch result failed: %1").arg(handler->errorString()));
         }
         delete handler;
+    } else if (NULL != reply) {
+        ioLog.trace(QString("A reply for the next request has come: %1").arg(reply->request().url().toString()));
+
+        qint64 dataLength = reply->bytesAvailable();
+        QByteArray replyData = reply->peek(dataLength);
+        ioLog.trace(QString("Reply data size: %1").arg(dataLength));
+        ioLog.trace(QString("Reply data start: %1").arg(QString(replyData.left(400)).toHtmlEscaped()));
+    } else {
+        ioLog.trace("A null reply has come: %1");
     }
-    loop->exit( );
+    loop->exit();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -474,43 +501,48 @@ EntrezQueryTask::EntrezQueryTask( QXmlDefaultHandler* rHandler, const QString& s
     SAFE_POINT( NULL != rHandler, "Invalid pointer encountered", );
 }
 
-void EntrezQueryTask::run( )
-{
+void EntrezQueryTask::run() {
     stateInfo.progress = 0;
-    ioLog.trace( "Entrez query task started..." );
+    ioLog.trace("Entrez query task started...");
 
     createLoopAndNetworkManager(query);
 
-    QUrl request( query );
-    ioLog.trace( QString( "Sending request: %1" ).arg( query ) );
-    queryReply = networkManager->get( QNetworkRequest( request ) );
-    connect( queryReply, SIGNAL( error( QNetworkReply::NetworkError ) ), this,
-        SLOT( sl_onError( QNetworkReply::NetworkError ) ) );
+    QUrl request(query);
+    ioLog.trace(QString("Sending request: %1").arg(query));
+    queryReply = networkManager->get(QNetworkRequest(request));
+    connect(queryReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(sl_onError(QNetworkReply::NetworkError)));
 
-    loop->exec( );
-    if ( !isCanceled( ) ) {
+    loop->exec();
+    if (!isCanceled()) {
         ioLog.trace("Query finished.");
     }
 }
 
-const QXmlDefaultHandler * EntrezQueryTask::getResultHandler() const
-{
+const QXmlDefaultHandler * EntrezQueryTask::getResultHandler() const {
     return resultHandler;
 }
 
-void EntrezQueryTask::sl_replyFinished( QNetworkReply* reply )
-{
+void EntrezQueryTask::sl_replyFinished(QNetworkReply* reply) {
     assert(reply == queryReply);
-    if ( isCanceled( ) ) {
+    if (isCanceled()) {
         loop->exit();
         return;
     }
-    QXmlInputSource source(reply);
+
+    qint64 dataLength = reply->bytesAvailable();
+    QByteArray replyData = reply->peek(dataLength);
+    ioLog.trace(QString("Reply data size: %1").arg(dataLength));
+    ioLog.trace(QString("Reply data start: %1").arg(QString(replyData.left(400)).toHtmlEscaped()));
+
+    QBuffer buffer(&replyData);
+
+    QXmlInputSource source(&buffer);
     xmlReader.setContentHandler(resultHandler);
     xmlReader.setErrorHandler(resultHandler);
     bool ok = xmlReader.parse(source);
+    ioLog.trace("Result parsed");
     if (!ok) {
-        stateInfo.setError("Parsing Entrez query result failed");
+        stateInfo.setError(QString("Parsing Entrez query result failed: %1").arg(resultHandler->errorString()));
     }
     loop->exit();
 }
@@ -555,7 +587,7 @@ bool ESearchResultHandler::characters( const QString &str )
 
 bool ESearchResultHandler::fatalError( const QXmlParseException &exception )
 {
-    Q_UNUSED(exception);
+    ioLog.trace(QString("Parser fatal error: %1").arg(exception.message()));
     assert(0);
     return false;
 
@@ -616,6 +648,7 @@ bool ESummaryResultHandler::fatalError( const QXmlParseException &exception )
 {
 
     errorStr = QString("ESummary result parsing failed: %1").arg(exception.message());
+    ioLog.trace(QString("Parser fatal error: %1").arg(errorStr));
 
     return false;
 

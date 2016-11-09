@@ -178,13 +178,17 @@ protected slots:
     void sl_onError( QNetworkReply::NetworkError error );
     void sl_uploadProgress( qint64 bytesSent, qint64 bytesTotal );
     virtual void onProxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*);
+    void sl_log();
 
 protected:
     // method should be called from the thread where @networkManager is actually used
     void createLoopAndNetworkManager(const QString &queryString);
+    void runLogTimer();
 
     QEventLoop *loop;
     QNetworkAccessManager *networkManager;
+
+    static const int LOG_TIMEOUT = 1000;
 };
 
 // This task makes queries to NCBI Entrez search engine, using eTools
