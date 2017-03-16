@@ -29,17 +29,17 @@
 
 #include "MysqlUpgraderFrom_1_14_To_1_15.h"
 #include "mysql_dbi/MysqlDbi.h"
-#include "mysql_dbi/util/MysqlHelpers.h"
+#include "dbi/util/GenericSqlHelpers.h"
 
 namespace U2 {
 
-MysqlUpgraderFrom_1_14_To_1_15::MysqlUpgraderFrom_1_14_To_1_15(MysqlDbi *dbi) :
-    MysqlUpgrader(Version::parseVersion("1.14.0"), Version::parseVersion("1.15.0"), dbi)
+MysqlUpgraderFrom_1_14_To_1_15::MysqlUpgraderFrom_1_14_To_1_15(GenericSqlDbi *dbi) :
+    GenericSqlUpgrader(Version::parseVersion("1.14.0"), Version::parseVersion("1.15.0"), dbi)
 {
 }
 
 void MysqlUpgraderFrom_1_14_To_1_15::upgrade(U2OpStatus &os) const {
-    MysqlTransaction t(dbi->getDbRef(), os);
+    GenericSqlTransaction t(dbi->getDbRef(), os);
     Q_UNUSED(t);
 
     upgradeObjectDbi(os, dbi->getDbRef());
@@ -48,7 +48,7 @@ void MysqlUpgraderFrom_1_14_To_1_15::upgrade(U2OpStatus &os) const {
     dbi->setProperty(U2DbiOptions::APP_MIN_COMPATIBLE_VERSION, versionTo.text, os);
 }
 
-void MysqlUpgraderFrom_1_14_To_1_15::upgradeObjectDbi(U2OpStatus &os, MysqlDbRef *dbRef) const {
+void MysqlUpgraderFrom_1_14_To_1_15::upgradeObjectDbi(U2OpStatus &os, GenericSqlDbRef *dbRef) const {
     const bool previousPathFieldExist = (1 == U2SqlQuery(QString("SELECT count(*) FROM information_schema.COLUMNS WHERE "
                                                          "TABLE_SCHEMA = '%1' AND TABLE_NAME = 'Folder' "
                                                          "AND COLUMN_NAME = 'previousPath'").
@@ -60,7 +60,7 @@ void MysqlUpgraderFrom_1_14_To_1_15::upgradeObjectDbi(U2OpStatus &os, MysqlDbRef
         CHECK_OP(os, );
     }
 
-    MysqlTransaction t(dbRef, os);
+    GenericSqlTransaction t(dbRef, os);
     Q_UNUSED(t);
 
     const QStringList folders = dbi->getObjectDbi()->getFolders(os);

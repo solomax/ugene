@@ -22,20 +22,20 @@
 #ifndef _U2_MYSQL_UPGRADER_FROM_1_15_TO_1_16_H_
 #define _U2_MYSQL_UPGRADER_FROM_1_15_TO_1_16_H_
 
-#include "MysqlUpgrader.h"
+#include "dbi/util/upgraders/GenericSqlUpgrader.h"
 
 namespace U2 {
 
-class MysqlDbRef;
+class GenericSqlDbRef;
 
-class MysqlUpgraderFrom_1_15_To_1_16 : public MysqlUpgrader {
+class MysqlUpgraderFrom_1_15_To_1_16 : public GenericSqlUpgrader {
 public:
-    MysqlUpgraderFrom_1_15_To_1_16(MysqlDbi *dbi);
+    MysqlUpgraderFrom_1_15_To_1_16(GenericSqlDbi *dbi);
 
     void upgrade(U2OpStatus &os) const;
 
 private:
-    void upgradeFeatureDbi(U2OpStatus &os, MysqlDbRef *dbRef) const;
+    void upgradeFeatureDbi(U2OpStatus &os, GenericSqlDbRef *dbRef) const;
 };
 
 }   // namespace U2

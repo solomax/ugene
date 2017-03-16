@@ -49,10 +49,29 @@ HEADERS += src/ABIFormat.h \
            src/ace/AceImporter.h \
            src/ace/CloneAssemblyWithReferenceToDbiTask.h \
            src/ace/ConvertAceToSqliteTask.h \
+           src/dbi/GenericSqlAssemblyDbi.h \
+           src/dbi/GenericSqlAttributeDbi.h \
+           src/dbi/GenericSqlBlobInputStream.h \
+           src/dbi/GenericSqlBlobOutputStream.h \
+           src/dbi/GenericSqlCrossDatabaseReferenceDbi.h \
+           src/dbi/GenericSqlDbi.h \
+           src/dbi/GenericSqlFeatureDbi.h \
+           src/dbi/GenericSqlModDbi.h \
+           src/dbi/GenericSqlMsaDbi.h \
+           src/dbi/GenericSqlObjectDbi.h \
+           src/dbi/GenericSqlObjectRelationsDbi.h \
+           src/dbi/GenericSqlSequenceDbi.h \
+           src/dbi/GenericSqlUdrDbi.h \
+           src/dbi/GenericSqlVariantDbi.h \
+           src/dbi/util/GenericSqlAssemblyAdapter.h \
+           src/dbi/util/GenericSqlAssemblyUtils.h \
+           src/dbi/util/GenericSqlDbiUtils.h \
+           src/dbi/util/GenericSqlHelpers.h \
+           src/dbi/util/GenericSqlModificationAction.h \
+           src/dbi/util/GenericSqlMultiTableAssemblyAdapter.h \
+           src/dbi/util/GenericSqlSingleTableAssemblyAdapter.h \
            src/mysql_dbi/MysqlAssemblyDbi.h \
            src/mysql_dbi/MysqlAttributeDbi.h \
-           src/mysql_dbi/MysqlBlobInputStream.h \
-           src/mysql_dbi/MysqlBlobOutputStream.h \
            src/mysql_dbi/MysqlCrossDatabaseReferenceDbi.h \
            src/mysql_dbi/MysqlDbi.h \
            src/mysql_dbi/MysqlFeatureDbi.h \
@@ -63,14 +82,7 @@ HEADERS += src/ABIFormat.h \
            src/mysql_dbi/MysqlSequenceDbi.h \
            src/mysql_dbi/MysqlUdrDbi.h \
            src/mysql_dbi/MysqlVariantDbi.h \
-           src/mysql_dbi/util/MysqlAssemblyAdapter.h \
-           src/mysql_dbi/util/MysqlAssemblyUtils.h \
-           src/mysql_dbi/util/MysqlDbiUtils.h \
-           src/mysql_dbi/util/MysqlHelpers.h \
-           src/mysql_dbi/util/MysqlModificationAction.h \
-           src/mysql_dbi/util/MysqlMultiTableAssemblyAdapter.h \
            src/mysql_dbi/util/MysqlSingleTableAssemblyAdapter.h \
-           src/mysql_dbi/util/upgraders/MysqlUpgrader.h \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_14_To_1_15.h \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_15_To_1_16.h \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_16_To_1_17.h \
@@ -104,7 +116,9 @@ HEADERS += src/ABIFormat.h \
            src/util/AssemblyAdapter.h \
            src/util/AssemblyPackAlgorithm.h \
            src/util/PairedFastqComparator.h \
-           src/util/SnpeffInfoParser.h
+           src/util/SnpeffInfoParser.h \
+    src/mysql_dbi/util/MysqlMultiTableAssemblyAdapter.h \
+    src/dbi/util/upgraders/GenericSqlUpgrader.h
 
 SOURCES += src/ABIFormat.cpp \
            src/AbstractVariationFormat.cpp \
@@ -152,10 +166,29 @@ SOURCES += src/ABIFormat.cpp \
            src/ace/AceImportUtils.cpp \
            src/ace/CloneAssemblyWithReferenceToDbiTask.cpp \
            src/ace/ConvertAceToSqliteTask.cpp \
+           src/dbi/GenericSqlAssemblyDbi.cpp \
+           src/dbi/GenericSqlAttributeDbi.cpp \
+           src/dbi/GenericSqlBlobInputStream.cpp \
+           src/dbi/GenericSqlBlobOutputStream.cpp \
+           src/dbi/GenericSqlCrossDatabaseReferenceDbi.cpp \
+           src/dbi/GenericSqlDbi.cpp \
+           src/dbi/GenericSqlFeatureDbi.cpp \
+           src/dbi/GenericSqlModDbi.cpp \
+           src/dbi/GenericSqlMsaDbi.cpp \
+           src/dbi/GenericSqlObjectDbi.cpp \
+           src/dbi/GenericSqlObjectRelationsDbi.cpp \
+           src/dbi/GenericSqlSequenceDbi.cpp \
+           src/dbi/GenericSqlUdrDbi.cpp \
+           src/dbi/GenericSqlVariantDbi.cpp \
+           src/dbi/util/GenericSqlAssemblyAdapter.cpp \
+           src/dbi/util/GenericSqlAssemblyUtils.cpp \
+           src/dbi/util/GenericSqlDbiUtils.cpp \
+           src/dbi/util/GenericSqlHelpers.cpp \
+           src/dbi/util/GenericSqlModificationAction.cpp \
+           src/dbi/util/GenericSqlMultiTableAssemblyAdapter.cpp \
+           src/dbi/util/GenericSqlSingleTableAssemblyAdapter.cpp \
            src/mysql_dbi/MysqlAssemblyDbi.cpp \
            src/mysql_dbi/MysqlAttributeDbi.cpp \
-           src/mysql_dbi/MysqlBlobInputStream.cpp \
-           src/mysql_dbi/MysqlBlobOutputStream.cpp \
            src/mysql_dbi/MysqlCrossDatabaseReferenceDbi.cpp \
            src/mysql_dbi/MysqlDbi.cpp \
            src/mysql_dbi/MysqlFeatureDbi.cpp \
@@ -166,14 +199,7 @@ SOURCES += src/ABIFormat.cpp \
            src/mysql_dbi/MysqlSequenceDbi.cpp \
            src/mysql_dbi/MysqlUdrDbi.cpp \
            src/mysql_dbi/MysqlVariantDbi.cpp \
-           src/mysql_dbi/util/MysqlAssemblyAdapter.cpp \
-           src/mysql_dbi/util/MysqlAssemblyUtils.cpp \
-           src/mysql_dbi/util/MysqlDbiUtils.cpp \
-           src/mysql_dbi/util/MysqlHelpers.cpp \
-           src/mysql_dbi/util/MysqlModificationAction.cpp \
-           src/mysql_dbi/util/MysqlMultiTableAssemblyAdapter.cpp \
            src/mysql_dbi/util/MysqlSingleTableAssemblyAdapter.cpp \
-           src/mysql_dbi/util/upgraders/MysqlUpgrader.cpp \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_14_To_1_15.cpp \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_15_To_1_16.cpp \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_16_To_1_17.cpp \
@@ -206,7 +232,9 @@ SOURCES += src/ABIFormat.cpp \
            src/tasks/MysqlUpgradeTask.cpp \
            src/util/AssemblyPackAlgorithm.cpp \
            src/util/PairedFastqComparator.cpp \
-           src/util/SnpeffInfoParser.cpp
+           src/util/SnpeffInfoParser.cpp \
+    src/mysql_dbi/util/MysqlMultiTableAssemblyAdapter.cpp \
+    src/dbi/util/upgraders/GenericSqlUpgrader.cpp
 
 RESOURCES += U2Formats.qrc
 TRANSLATIONS += transl/english.ts \

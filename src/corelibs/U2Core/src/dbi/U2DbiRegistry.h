@@ -35,6 +35,7 @@ class U2DbiPool;
 
 #define SQLITE_DBI_ID "SQLiteDbi"
 #define MYSQL_DBI_ID "MysqlDbi"
+#define ORACLE_DBI_ID "OracleDbi"
 #define BAM_DBI_ID "SamtoolsBasedDbi"
 #define DEFAULT_DBI_ID SQLITE_DBI_ID
 #define WORKFLOW_SESSION_TMP_DBI_ALIAS "workflow_session"
@@ -57,6 +58,14 @@ class U2CORE_EXPORT U2DbiRegistry : public QObject {
 public:
     U2DbiRegistry(QObject *parent = NULL);
     ~U2DbiRegistry();
+
+	enum DbVendor {
+		MYSQL = 0,
+		ORACLE
+	};
+	// TODO: use Q_ENUMS or Q_ENUM to improve this
+	static const QMap<QString, DbVendor> vendorMap;
+	static const QMap<DbVendor, QString> vendorMapReverse;
 
     virtual bool registerDbiFactory(U2DbiFactory *factory);
 
@@ -108,6 +117,9 @@ private:
     /** this connection is opened during the whole ugene session*/
     DbiConnection*                          sessionDbiConnection;
     bool                                    sessionDbiInitDone;
+
+	static QMap<QString, DbVendor> getVendorMap();
+	static QMap<DbVendor, QString> getVendorMapReverse();
 };
 
 /**

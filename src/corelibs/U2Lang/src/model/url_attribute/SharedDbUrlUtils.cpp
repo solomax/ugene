@@ -94,7 +94,9 @@ bool SharedDbUrlUtils::validateDbUrl(const QString &dbUrl) {
     QString hostName;
     int portNum;
     QString dbName;
-    return U2DbiUtils::parseDbiUrl(dbUrl, hostName, portNum, dbName);
+    U2DbiRegistry::DbVendor vendor;
+
+    return U2DbiUtils::parseDbiUrl(dbUrl, vendor, hostName, portNum, dbName);
 }
 
 QString SharedDbUrlUtils::createDbFolderUrl(const Folder &folder, const U2DataType &compatibleType) {

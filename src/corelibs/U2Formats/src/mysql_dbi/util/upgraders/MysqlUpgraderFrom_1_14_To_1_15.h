@@ -22,20 +22,20 @@
 #ifndef _U2_MYSQL_UPGRADER_FROM_1_14_TO_1_15_H_
 #define _U2_MYSQL_UPGRADER_FROM_1_14_TO_1_15_H_
 
-#include "MysqlUpgrader.h"
+#include "dbi/util/upgraders/GenericSqlUpgrader.h"
 
 namespace U2 {
 
-class MysqlDbRef;
+class GenericSqlDbRef;
 
-class MysqlUpgraderFrom_1_14_To_1_15 : public MysqlUpgrader {
+class MysqlUpgraderFrom_1_14_To_1_15 : public GenericSqlUpgrader {
 public:
-    MysqlUpgraderFrom_1_14_To_1_15(MysqlDbi *dbi);
+    MysqlUpgraderFrom_1_14_To_1_15(GenericSqlDbi *dbi);
 
     void upgrade(U2OpStatus &os) const;
 
 private:
-    void upgradeObjectDbi(U2OpStatus &os, MysqlDbRef *dbRef) const;
+    void upgradeObjectDbi(U2OpStatus &os, GenericSqlDbRef *dbRef) const;
     static QString getParentFolderFromList(const QStringList &folders, const QString &folder);
     static void rollNewFolderPath(QString &originalPath, const QStringList &allFolders);
 };

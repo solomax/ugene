@@ -38,7 +38,7 @@
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/Version.h>
 
-#include <U2Formats/MysqlDbiUtils.h>
+#include <U2Formats/GenericSqlDbiUtils.h>
 #include <U2Formats/MysqlUpgradeTask.h>
 
 #include <U2Gui/AuthenticationDialog.h>
@@ -457,7 +457,7 @@ QListWidgetItem *SharedConnectionsDialog::findItemByDbiUrl(const QString &dbiUrl
 
 bool SharedConnectionsDialog::checkDbInitializationState(const U2DbiRef &ref, bool &initializationRequired) {
     U2OpStatusImpl os;
-    const bool dbInitialized = MysqlDbiUtils::isDbInitialized(ref, os);
+    const bool dbInitialized = GenericSqlDbiUtils::isDbInitialized(ref, os);
     if (os.isCoR()) {
         QMessageBox::critical(this,
                               tr("Connection Error"),

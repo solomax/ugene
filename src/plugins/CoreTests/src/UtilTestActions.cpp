@@ -64,6 +64,7 @@ void GTest_AddSharedDbUrl::init(XMLTestFormat *, const QDomElement &el) {
     const QString url = el.attribute(URL_ATTR);
     CHECK_EXT(!url.isEmpty(), failMissingValue(URL_ATTR), );
     const QString portStr = el.attribute(PORT_ATTR);
+    U2DbiRegistry::DbVendor vendor(U2DbiRegistry::MYSQL); //FIXME TODO
     int port = -1;
     if (!portStr.isEmpty()) {
         bool conversionOk = false;
@@ -73,7 +74,7 @@ void GTest_AddSharedDbUrl::init(XMLTestFormat *, const QDomElement &el) {
     const QString dbName = el.attribute(DB_NAME_ATTR);
     CHECK_EXT(!dbName.isEmpty(), failMissingValue(DB_NAME_ATTR), );
 
-    dbUrl = U2DbiUtils::createDbiUrl(url, port, dbName);
+    dbUrl = U2DbiUtils::createDbiUrl(vendor, url, port, dbName);
     userName = el.attribute(USER_NAME_ATTR);
     passwordIsSet = el.hasAttribute(PASSWORD_ATTR);
     password = el.attribute(PASSWORD_ATTR);

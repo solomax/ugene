@@ -33,17 +33,17 @@
 
 #include "MysqlUpgraderFrom_1_15_To_1_16.h"
 #include "mysql_dbi/MysqlDbi.h"
-#include "mysql_dbi/util/MysqlHelpers.h"
+#include "dbi/util/GenericSqlHelpers.h"
 
 namespace U2 {
 
-MysqlUpgraderFrom_1_15_To_1_16::MysqlUpgraderFrom_1_15_To_1_16(MysqlDbi *dbi) :
-    MysqlUpgrader(Version::parseVersion("1.15.0"), Version::parseVersion("1.16.0"), dbi)
+MysqlUpgraderFrom_1_15_To_1_16::MysqlUpgraderFrom_1_15_To_1_16(GenericSqlDbi *dbi) :
+    GenericSqlUpgrader(Version::parseVersion("1.15.0"), Version::parseVersion("1.16.0"), dbi)
 {
 }
 
 void MysqlUpgraderFrom_1_15_To_1_16::upgrade(U2OpStatus &os) const {
-    MysqlTransaction t(dbi->getDbRef(), os);
+    GenericSqlTransaction t(dbi->getDbRef(), os);
     Q_UNUSED(t);
 
     upgradeFeatureDbi(os, dbi->getDbRef());
@@ -52,7 +52,7 @@ void MysqlUpgraderFrom_1_15_To_1_16::upgrade(U2OpStatus &os) const {
     dbi->setProperty(U2DbiOptions::APP_MIN_COMPATIBLE_VERSION, versionTo.text, os);
 }
 
-void MysqlUpgraderFrom_1_15_To_1_16::upgradeFeatureDbi(U2OpStatus &os, MysqlDbRef *dbRef) const {
+void MysqlUpgraderFrom_1_15_To_1_16::upgradeFeatureDbi(U2OpStatus &os, GenericSqlDbRef *dbRef) const {
     const bool featureClassFieldExist = (1 == U2SqlQuery(QString("SELECT count(*) FROM information_schema.COLUMNS WHERE "
                                                          "TABLE_SCHEMA = '%1' AND TABLE_NAME = 'Feature' "
                                                          "AND COLUMN_NAME = 'class'").

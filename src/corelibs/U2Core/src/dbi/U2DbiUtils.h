@@ -146,12 +146,12 @@ public:
      * Short dbi url is used where user name is not defined. It should be converted
      * to the full url before using.
      */
-    static QString createDbiUrl(const QString &host, int port, const QString &dbName);
-    static QString createFullDbiUrl(const QString &userName, const QString &host, int port, const QString &dbName);
+    static QString createDbiUrl(const U2DbiRegistry::DbVendor vendor, const QString &host, int port, const QString &dbName);
+    static QString createFullDbiUrl(const QString &userName, const U2DbiRegistry::DbVendor vendor, const QString &host, int port, const QString &dbName);
     static QString createFullDbiUrl(const QString &userName, const QString &dbiUrl);
 
-    static bool parseDbiUrl(const QString& dbiUrl, QString& host, int& port, QString& dbName);
-    static bool parseFullDbiUrl(const QString& dbiUrl, QString &userName, QString& host, int& port, QString& dbName);
+    static bool parseDbiUrl(const QString& dbiUrl, U2DbiRegistry::DbVendor &vendor, QString& host, int& port, QString& dbName);
+    static bool parseFullDbiUrl(const QString& dbiUrl, QString &userName, U2DbiRegistry::DbVendor &vendor, QString& host, int& port, QString& dbName);
 
     static QString full2shortDbiUrl(const QString& fullDbiUrl);
     static QString full2shortDbiUrl(const QString& fullDbiUrl, QString &userName);

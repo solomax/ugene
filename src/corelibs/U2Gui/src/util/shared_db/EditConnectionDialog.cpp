@@ -56,6 +56,7 @@ EditConnectionDialog::~EditConnectionDialog() {
 
 void EditConnectionDialog::setReadOnly(bool readOnly) {
     ui->leName->setDisabled(readOnly);
+    ui->dBVendorComboBox->setDisabled(readOnly);
     ui->leHost->setDisabled(readOnly);
     ui->lePort->setDisabled(readOnly);
     ui->leDatabase->setDisabled(readOnly);
@@ -70,12 +71,17 @@ QString EditConnectionDialog::getName() const {
     }
 }
 
+U2DbiRegistry::DbVendor EditConnectionDialog::getDbVendor() const {
+    return U2DbiRegistry::vendorMap.find(ui->dBVendorComboBox->currentText()).value();
+}
+
 QString EditConnectionDialog::getUserName() const {
     return ui->authenticationWidget->getLogin();
 }
 
 QString EditConnectionDialog::getShortDbiUrl() const {
-    return U2DbiUtils::createDbiUrl(ui->leHost->text(),
+    return U2DbiUtils::createDbiUrl(getDbVendor(),
+                                    ui->leHost->text(),
                                     ui->lePort->text().toInt(),
                                     ui->leDatabase->text());
 }
@@ -97,7 +103,9 @@ void EditConnectionDialog::accept() {
 
 void EditConnectionDialog::init(const U2DbiId& dbiUrl, const QString& connectionName, const QString &userName) {
     initTabOrder();
+    initVendorComboBox();
 
+    ui->dBVendorComboBox->setCurrentIndex(static_cast<int>(U2DbiRegistry::DbVendor::MYSQL));
     ui->leName->setText(connectionName);
     ui->lePort->setText(DEFAULT_PORT);
 
@@ -105,8 +113,10 @@ void EditConnectionDialog::init(const U2DbiId& dbiUrl, const QString& connection
         QString host;
         int port = -1;
         QString dbName;
+        U2DbiRegistry::DbVendor vendor;
 
-        U2DbiUtils::parseDbiUrl(dbiUrl, host,port, dbName);
+        U2DbiUtils::parseDbiUrl(dbiUrl, vendor, host, port, dbName);
+                ui->dBVendorComboBox->setCurrentIndex(vendor);
         ui->leHost->setText(host);
         if (port > 0) {
             ui->lePort->setText(QString::number(port));
@@ -121,8 +131,20 @@ void EditConnectionDialog::init(const U2DbiId& dbiUrl, const QString& connection
     ui->authenticationWidget->setRemembered(AppContext::getPasswordStorage()->isRemembered(fullDbiUrl));
 }
 
+void EditConnectionDialog::initVendorComboBox() {
+    ui->dBVendorComboBox->clear();
+    QMapIterator<QString, U2DbiRegistry::DbVendor> it(U2DbiRegistry::vendorMap);
+    while (it.hasNext()) {
+        QMap<QString, U2DbiRegistry::DbVendor>::const_iterator item = it.next();
+        // TODO: add translations somehow
+        ui->dBVendorComboBox->insertItem(static_cast<int>(item.value()), item.key());
+    }
+    ui->dBVendorComboBox->setCurrentIndex(0);
+}
+
 void EditConnectionDialog::initTabOrder() {
-    setTabOrder(ui->leName, ui->leHost);
+    setTabOrder(ui->leName, ui->dBVendorComboBox);
+    setTabOrder(ui->dBVendorComboBox, ui->leHost);
     setTabOrder(ui->leHost, ui->lePort);
     setTabOrder(ui->lePort, ui->leDatabase);
     setTabOrder(ui->leDatabase, ui->authenticationWidget->leLogin);

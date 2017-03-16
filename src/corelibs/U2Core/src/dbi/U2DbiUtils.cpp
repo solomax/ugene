@@ -46,7 +46,7 @@ static U2DataId emptyId;
 const QString U2DbiUtils::PUBLIC_DATABASE_NAME = QObject::tr("UGENE public database");
 const QString U2DbiUtils::PUBLIC_DATABASE_LOGIN = "public";
 const QString U2DbiUtils::PUBLIC_DATABASE_PASSWORD = "public";
-const QString U2DbiUtils::PUBLIC_DATABASE_URL = U2DbiUtils::createFullDbiUrl(PUBLIC_DATABASE_LOGIN, "5.9.139.103", 3306, "public_ugene_1_25");
+const QString U2DbiUtils::PUBLIC_DATABASE_URL = U2DbiUtils::createFullDbiUrl(PUBLIC_DATABASE_LOGIN, U2DbiRegistry::DbVendor::MYSQL, "5.9.139.103", 3306, "public_ugene_1_25");
 
 void U2DbiUtils::logNotSupported(U2DbiFeature f, U2Dbi* dbi, U2OpStatus& os) {
     QString msg = tr("Feature is not supported: %1, dbi: %2").arg(int(f)).arg(dbi == NULL ? QString("<unknown>") : dbi->getDbiId());
@@ -129,26 +129,43 @@ QString U2DbiUtils::ref2Url(const U2DbiRef& dbiRef) {
     return dbiFactory->id2Url(dbiRef.dbiId).getURLString();
 }
 
-QString U2DbiUtils::createDbiUrl(const QString &host, int port, const QString &dbName ) {
+QString U2DbiUtils::createDbiUrl(const U2DbiRegistry::DbVendor vendor, const QString &host, int port, const QString &dbName ) {
     QString portString = (port >= 0 ? QString::number(port) : "");
-    return host + ":" + portString + "/" + dbName;
+	//TODO: handle invalid vendor
+	QString vendorStr = U2DbiRegistry::vendorMapReverse.find(vendor).value();
+    return vendorStr + "://" + host + ":" + portString + "/" + dbName;
 }
 
-QString U2DbiUtils::createFullDbiUrl(const QString &userName, const QString &host, int port, const QString &dbName) {
-    return createFullDbiUrl(userName, createDbiUrl(host, port, dbName));
+QString U2DbiUtils::createFullDbiUrl(const QString &userName, const U2DbiRegistry::DbVendor vendor, const QString &host, int port, const QString &dbName) {
+    return createFullDbiUrl(userName, createDbiUrl(vendor, host, port, dbName));
 }
 
 QString U2DbiUtils::createFullDbiUrl(const QString &userName, const QString &dbiUrl) {
     return userName + "@" + dbiUrl;
 }
 
-bool U2DbiUtils::parseDbiUrl(const QString &dbiUrl, QString& host, int& port, QString& dbName) {
-    int sepIndex = dbiUrl.indexOf(":");
+bool U2DbiUtils::parseDbiUrl(const QString &dbiUrl, U2DbiRegistry::DbVendor &vendor, QString& host, int& port, QString& dbName) {
+	int sepIndex = dbiUrl.indexOf("://");
+	// handle previously written URL, without "vendor://"
+	int prevSepIndex = 0;
+	if (sepIndex > 0) {
+		QString vendorStr = dbiUrl.left(sepIndex);
+		// TODO: catch null
+		vendor = U2DbiRegistry::vendorMap.find(vendorStr).value();
+		sepIndex += QString("://").length();
+		prevSepIndex = sepIndex;
+	} else {
+		// default value
+		vendor = U2DbiRegistry::DbVendor::MYSQL;
+		prevSepIndex = sepIndex = 0;
+	}
+
+	sepIndex = dbiUrl.indexOf(":", sepIndex);
     if (sepIndex < 0) {
         return false;
     }
 
-    host = dbiUrl.left(sepIndex);
+    host = dbiUrl.mid(prevSepIndex, sepIndex - prevSepIndex);
 
     sepIndex = dbiUrl.indexOf("/", sepIndex);
     if (sepIndex < 0) {
@@ -171,8 +188,8 @@ bool U2DbiUtils::parseDbiUrl(const QString &dbiUrl, QString& host, int& port, QS
     return true;
 }
 
-bool U2DbiUtils::parseFullDbiUrl(const QString &dbiUrl, QString &userName, QString &host, int &port, QString &dbName) {
-    return parseDbiUrl(full2shortDbiUrl(dbiUrl, userName), host, port, dbName);
+bool U2DbiUtils::parseFullDbiUrl(const QString &dbiUrl, QString &userName, U2DbiRegistry::DbVendor &vendor, QString &host, int &port, QString &dbName) {
+    return parseDbiUrl(full2shortDbiUrl(dbiUrl, userName), vendor, host, port, dbName);
 }
 
 QString U2DbiUtils::full2shortDbiUrl(const QString &fullDbiUrl) {

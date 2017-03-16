@@ -22,19 +22,19 @@
 #include <U2Core/U2SafePoints.h>
 
 #include "MysqlCrossDatabaseReferenceDbi.h"
-#include "MysqlObjectDbi.h"
-#include "util/MysqlHelpers.h"
+#include "dbi/util/GenericSqlHelpers.h"
 
 namespace U2 {
 
-MysqlCrossDatabaseReferenceDbi::MysqlCrossDatabaseReferenceDbi(MysqlDbi* dbi) :
-    U2CrossDatabaseReferenceDbi(dbi),
-    MysqlChildDbiCommon(dbi)
+MysqlCrossDatabaseReferenceDbi::MysqlCrossDatabaseReferenceDbi(GenericSqlDbi* dbi) :
+    GenericSqlCrossDatabaseReferenceDbi(dbi)
 {
 }
 
+MysqlCrossDatabaseReferenceDbi::~MysqlCrossDatabaseReferenceDbi() {}
+
 void MysqlCrossDatabaseReferenceDbi::initSqlSchema(U2OpStatus& os) {
-    MysqlTransaction t(db, os);
+    GenericSqlTransaction t(db, os);
     Q_UNUSED(t);
 
     // cross database reference object
@@ -45,67 +45,6 @@ void MysqlCrossDatabaseReferenceDbi::initSqlSchema(U2OpStatus& os) {
     U2SqlQuery("CREATE TABLE CrossDatabaseReference (object BIGINT, factory LONGTEXT NOT NULL, dbi TEXT NOT NULL, "
                "rid BLOB NOT NULL, version INTEGER NOT NULL, "
                " FOREIGN KEY(object) REFERENCES Object(id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8", db, os).execute();
-}
-
-
-void MysqlCrossDatabaseReferenceDbi::createCrossReference(U2CrossDatabaseReference& reference, const QString& folder, U2OpStatus& os) {
-    MysqlTransaction t(db, os);
-    Q_UNUSED(t);
-
-    dbi->getMysqlObjectDbi()->createObject(reference, folder, U2DbiObjectRank_TopLevel, os);
-    CHECK_OP(os, );
-
-    static const QString queryString = "INSERT INTO CrossDatabaseReference(object, factory, dbi, rid, version) VALUES(:object, :factory, :dbi, :rid, :version)";
-    U2SqlQuery q(queryString, db, os);
-    q.bindDataId(":object", reference.id);
-    q.bindString(":factory", reference.dataRef.dbiRef.dbiFactoryId);
-    q.bindString(":dbi", reference.dataRef.dbiRef.dbiId);
-    q.bindBlob(":rid", reference.dataRef.entityId);
-    q.bindInt64(":version", reference.dataRef.version);
-    q.execute();
-}
-
-void MysqlCrossDatabaseReferenceDbi::removeCrossReferenceData(const U2DataId &referenceId, U2OpStatus &os) {
-    MysqlTransaction t(db, os);
-    Q_UNUSED(t);
-
-    static const QString queryString = "DELETE FROM CrossDatabaseReference WHERE object = :object";
-    U2SqlQuery q(queryString, db, os);
-    q.bindDataId(":object", referenceId);
-    q.execute();
-}
-
-U2CrossDatabaseReference MysqlCrossDatabaseReferenceDbi::getCrossReference(const U2DataId& objectId, U2OpStatus& os) {
-    U2CrossDatabaseReference res(objectId, dbi->getDbiId(), 0);
-
-    static const QString queryString = "SELECT r.factory, r.dbi, r.rid, r.version, o.name, o.version FROM CrossDatabaseReference AS r, Object AS o WHERE o.id = :id AND r.object = o.id";
-    U2SqlQuery q(queryString, db, os);
-    q.bindDataId(":id", objectId);
-    if (q.step())  {
-        res.dataRef.dbiRef.dbiFactoryId= q.getString(0);
-        res.dataRef.dbiRef.dbiId = q.getString(1);
-        res.dataRef.entityId = q.getBlob(2);
-        res.dataRef.version = q.getInt64(3);
-        res.visualName = q.getString(4);
-        res.version = q.getInt64(5);
-        q.ensureDone();
-    }
-
-    return res;
-}
-
-void MysqlCrossDatabaseReferenceDbi::updateCrossReference(const U2CrossDatabaseReference& reference, U2OpStatus& os) {
-    MysqlTransaction t(db, os);
-    Q_UNUSED(t);
-
-    static const QString queryString = "UPDATE CrossDatabaseReference SET factory = :factory, dbi = :dbi, rid = :rid, version = :version WHERE object = :object";
-    U2SqlQuery q(queryString, db, os);
-    q.bindString(":factory", reference.dataRef.dbiRef.dbiFactoryId);
-    q.bindString(":dbi", reference.dataRef.dbiRef.dbiId);
-    q.bindBlob(":rid", reference.dataRef.entityId);
-    q.bindInt64(":version", reference.dataRef.version);
-    q.bindDataId(":object", reference.id);
-    q.execute();
 }
 
 }   // namespace U2

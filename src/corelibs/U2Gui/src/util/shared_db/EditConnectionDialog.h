@@ -49,6 +49,7 @@ public:
     QString     getUserName() const;
     QString     getShortDbiUrl() const;
     QString     getFullDbiUrl() const;
+    U2DbiRegistry::DbVendor getDbVendor() const;
 
 public slots:
     void accept();
@@ -56,6 +57,7 @@ public slots:
 private:
     void init(const QString &dbiUrl, const QString &connectionName, const QString &userName);
     void initTabOrder();
+    void initVendorComboBox();
     void saveCredentials() const;
     void removeCredentials() const;
     bool checkFields();

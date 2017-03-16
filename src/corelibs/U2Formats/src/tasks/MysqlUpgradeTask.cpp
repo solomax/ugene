@@ -23,7 +23,7 @@
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include <U2Formats/MysqlDbiUtils.h>
+#include "dbi/util/GenericSqlDbiUtils.h"
 
 #include "MysqlUpgradeTask.h"
 
@@ -38,7 +38,7 @@ MysqlUpgradeTask::MysqlUpgradeTask(const U2DbiRef &dbiRef) :
 
 void MysqlUpgradeTask::run() {
     AppContext::getDbiRegistry()->getGlobalDbiPool()->closeAllConnections(dbiRef, stateInfo);
-    MysqlDbiUtils::upgrade(dbiRef, stateInfo);
+    GenericSqlDbiUtils::upgrade(dbiRef, stateInfo);
 }
 
 const U2DbiRef &MysqlUpgradeTask::getDbiRef() const {

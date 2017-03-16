@@ -24,7 +24,7 @@
 #include "MysqlUpgraderFrom_1_16_To_1_24.h"
 #include "mysql_dbi/MysqlDbi.h"
 #include "mysql_dbi/MysqlObjectDbi.h"
-#include "mysql_dbi/util/MysqlHelpers.h"
+#include "dbi/util/GenericSqlHelpers.h"
 
 namespace U2 {
 
@@ -32,14 +32,14 @@ const QString MysqlUpgraderFrom_1_16_To_1_24::META_INFO_MARKER = "##";
 const QString MysqlUpgraderFrom_1_16_To_1_24::HEADER_MARKER = "#";
 const QString MysqlUpgraderFrom_1_16_To_1_24::COLUMN_SEPARATOR = "\t";
 
-MysqlUpgraderFrom_1_16_To_1_24::MysqlUpgraderFrom_1_16_To_1_24(MysqlDbi *dbi)
-    : MysqlUpgrader(Version::parseVersion("1.16.0"), Version::parseVersion("1.24.0"), dbi)
+MysqlUpgraderFrom_1_16_To_1_24::MysqlUpgraderFrom_1_16_To_1_24(GenericSqlDbi *dbi)
+    : GenericSqlUpgrader(Version::parseVersion("1.16.0"), Version::parseVersion("1.24.0"), dbi)
 {
 
 }
 
 void MysqlUpgraderFrom_1_16_To_1_24::upgrade(U2OpStatus &os) const {
-    MysqlTransaction t(dbi->getDbRef(), os);
+    GenericSqlTransaction t(dbi->getDbRef(), os);
     Q_UNUSED(t);
 
     upgradeVariantDbi(os);
@@ -51,7 +51,7 @@ void MysqlUpgraderFrom_1_16_To_1_24::upgrade(U2OpStatus &os) const {
 void MysqlUpgraderFrom_1_16_To_1_24::upgradeVariantDbi(U2OpStatus &os) const {
     coreLog.trace("Variant DBI upgrading");
 
-    MysqlTransaction t(dbi->getDbRef(), os);
+    GenericSqlTransaction t(dbi->getDbRef(), os);
     Q_UNUSED(t);
 
     QMap<U2DataId, QStringList> trackId2header;
@@ -101,7 +101,7 @@ QString convertInfo(const QString &additionalInfo, const QStringList &header) {
 void MysqlUpgraderFrom_1_16_To_1_24::repackInfo(U2OpStatus &os, const QMap<U2DataId, QStringList> &trackId2header) const {
     coreLog.trace("Additional info repacking");
 
-    MysqlTransaction t(dbi->getDbRef(), os);
+    GenericSqlTransaction t(dbi->getDbRef(), os);
     Q_UNUSED(t);
 
     const qint64 variantsCount = U2SqlQuery("SELECT count(*) from Variant", dbi->getDbRef(), os).selectInt64();

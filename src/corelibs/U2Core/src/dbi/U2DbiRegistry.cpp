@@ -33,8 +33,6 @@
 #include <U2Core/U2DbiUtils.h>
 #include "U2DbiRegistry.h"
 
-#include <U2Formats/MysqlDbiUtils.h>
-
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtCore/QThread>
@@ -170,6 +168,29 @@ void U2DbiRegistry::deallocateTmpDbi(const TmpDbiRef& ref, U2OpStatus& os) {
         QFile::remove(ref.dbiRef.dbiId);
     }
 }
+
+const QMap<QString, U2DbiRegistry::DbVendor> U2DbiRegistry::vendorMap = U2DbiRegistry::getVendorMap();
+
+QMap<QString, U2DbiRegistry::DbVendor> U2DbiRegistry::getVendorMap() {
+	QMap<QString, U2DbiRegistry::DbVendor> ret;
+	ret.insert("MySQL", U2DbiRegistry::DbVendor::MYSQL);
+	ret.insert("Oracle", U2DbiRegistry::DbVendor::ORACLE);
+	return ret;
+}
+
+const QMap<U2DbiRegistry::DbVendor, QString> U2DbiRegistry::vendorMapReverse = U2DbiRegistry::getVendorMapReverse();
+
+QMap<U2DbiRegistry::DbVendor, QString> U2DbiRegistry::getVendorMapReverse() {
+	QMap<U2DbiRegistry::DbVendor, QString> ret;
+	QMapIterator<QString, U2DbiRegistry::DbVendor> it(U2DbiRegistry::vendorMap);
+	while (it.hasNext()) {
+		it.next();
+		ret.insert(it.value(), it.key());
+	}
+
+	return ret;
+}
+
 
 namespace {
     QString createNewDatabase(const QString &alias, U2OpStatus &os) {

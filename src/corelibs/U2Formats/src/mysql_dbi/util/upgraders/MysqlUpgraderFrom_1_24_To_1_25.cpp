@@ -28,18 +28,18 @@
 
 #include "MysqlUpgraderFrom_1_24_To_1_25.h"
 #include "mysql_dbi/MysqlDbi.h"
-#include "mysql_dbi/util/MysqlHelpers.h"
+#include "dbi/util/GenericSqlHelpers.h"
 
 namespace U2 {
 
-MysqlUpgraderFrom_1_24_To_1_25::MysqlUpgraderFrom_1_24_To_1_25(MysqlDbi *dbi) :
-    MysqlUpgrader(Version::parseVersion("1.24.0"), Version::parseVersion("1.25.0"), dbi)
+MysqlUpgraderFrom_1_24_To_1_25::MysqlUpgraderFrom_1_24_To_1_25(GenericSqlDbi *dbi) :
+    GenericSqlUpgrader(Version::parseVersion("1.24.0"), Version::parseVersion("1.25.0"), dbi)
 {
 
 }
 
 void MysqlUpgraderFrom_1_24_To_1_25::upgrade(U2OpStatus &os) const {
-    MysqlTransaction t(dbi->getDbRef(), os);
+    GenericSqlTransaction t(dbi->getDbRef(), os);
     Q_UNUSED(t);
 
     dropOldPrecedure(os, dbi->getDbRef());
@@ -51,7 +51,7 @@ void MysqlUpgraderFrom_1_24_To_1_25::upgrade(U2OpStatus &os) const {
     dbi->setProperty(U2DbiOptions::APP_MIN_COMPATIBLE_VERSION, versionTo.text, os);
 }
 
-void MysqlUpgraderFrom_1_24_To_1_25::dropOldPrecedure(U2OpStatus &os, MysqlDbRef *dbRef) const {
+void MysqlUpgraderFrom_1_24_To_1_25::dropOldPrecedure(U2OpStatus &os, GenericSqlDbRef *dbRef) const {
     U2OpStatus2Log nonCriticalOs;
     U2SqlQuery("DROP PROCEDURE IF EXISTS CreateIndex", dbRef, nonCriticalOs).execute();
 

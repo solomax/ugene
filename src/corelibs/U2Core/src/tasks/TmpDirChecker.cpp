@@ -50,7 +50,7 @@ void TmpDirChecker::run()
 
     if (!checkPath(ugeneTempDirPath)) {
         if (!AppContext::isGUIMode()) {
-            QString message = "UGENE hasn't permitions to write to its temporary directory \"" + ugeneTempDirPath +
+            QString message = "UGENE doesn't have permissions to write to its temporary directory \"" + ugeneTempDirPath +
                 "\". Use --tmp-dir=<path_to_file> to set another temporary directory";
             coreLog.error((message));
         }

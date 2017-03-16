@@ -22,16 +22,16 @@
 #ifndef _U2_MYSQL_UPGRADER_FROM_1_17_TO_1_24_H_
 #define _U2_MYSQL_UPGRADER_FROM_1_17_TO_1_24_H_
 
-#include "MysqlUpgrader.h"
+#include "dbi/util/upgraders/GenericSqlUpgrader.h"
 
 namespace U2 {
 
-class MysqlDbRef;
+class GenericSqlDbRef;
 class U2VariantTrack;
 
-class MysqlUpgraderFrom_1_16_To_1_24 : public MysqlUpgrader {
+class MysqlUpgraderFrom_1_16_To_1_24 : public GenericSqlUpgrader {
 public:
-    MysqlUpgraderFrom_1_16_To_1_24(MysqlDbi *dbi);
+    MysqlUpgraderFrom_1_16_To_1_24(GenericSqlDbi *dbi);
 
     void upgrade(U2OpStatus &os) const;
 
