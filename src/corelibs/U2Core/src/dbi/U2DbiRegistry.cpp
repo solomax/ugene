@@ -172,23 +172,23 @@ void U2DbiRegistry::deallocateTmpDbi(const TmpDbiRef& ref, U2OpStatus& os) {
 const QMap<QString, U2DbiRegistry::DbVendor> U2DbiRegistry::vendorMap = U2DbiRegistry::getVendorMap();
 
 QMap<QString, U2DbiRegistry::DbVendor> U2DbiRegistry::getVendorMap() {
-	QMap<QString, U2DbiRegistry::DbVendor> ret;
-	ret.insert("MySQL", U2DbiRegistry::DbVendor::MYSQL);
-	ret.insert("Oracle", U2DbiRegistry::DbVendor::ORACLE);
-	return ret;
+    QMap<QString, U2DbiRegistry::DbVendor> ret;
+    ret.insert("MySQL", U2DbiRegistry::DbVendor::MYSQL);
+    ret.insert("Oracle", U2DbiRegistry::DbVendor::ORACLE);
+    return ret;
 }
 
 const QMap<U2DbiRegistry::DbVendor, QString> U2DbiRegistry::vendorMapReverse = U2DbiRegistry::getVendorMapReverse();
 
 QMap<U2DbiRegistry::DbVendor, QString> U2DbiRegistry::getVendorMapReverse() {
-	QMap<U2DbiRegistry::DbVendor, QString> ret;
-	QMapIterator<QString, U2DbiRegistry::DbVendor> it(U2DbiRegistry::vendorMap);
-	while (it.hasNext()) {
-		it.next();
-		ret.insert(it.value(), it.key());
-	}
+    QMap<U2DbiRegistry::DbVendor, QString> ret;
+    QMapIterator<QString, U2DbiRegistry::DbVendor> it(U2DbiRegistry::vendorMap);
+    while (it.hasNext()) {
+        it.next();
+        ret.insert(it.value(), it.key());
+    }
 
-	return ret;
+    return ret;
 }
 
 

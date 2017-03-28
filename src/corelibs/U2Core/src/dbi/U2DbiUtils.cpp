@@ -131,8 +131,8 @@ QString U2DbiUtils::ref2Url(const U2DbiRef& dbiRef) {
 
 QString U2DbiUtils::createDbiUrl(const U2DbiRegistry::DbVendor vendor, const QString &host, int port, const QString &dbName ) {
     QString portString = (port >= 0 ? QString::number(port) : "");
-	//TODO: handle invalid vendor
-	QString vendorStr = U2DbiRegistry::vendorMapReverse.find(vendor).value();
+    //TODO: handle invalid vendor
+    QString vendorStr = U2DbiRegistry::vendorMapReverse.find(vendor).value();
     return vendorStr + "://" + host + ":" + portString + "/" + dbName;
 }
 
@@ -145,22 +145,22 @@ QString U2DbiUtils::createFullDbiUrl(const QString &userName, const QString &dbi
 }
 
 bool U2DbiUtils::parseDbiUrl(const QString &dbiUrl, U2DbiRegistry::DbVendor &vendor, QString& host, int& port, QString& dbName) {
-	int sepIndex = dbiUrl.indexOf("://");
-	// handle previously written URL, without "vendor://"
-	int prevSepIndex = 0;
-	if (sepIndex > 0) {
-		QString vendorStr = dbiUrl.left(sepIndex);
-		// TODO: catch null
-		vendor = U2DbiRegistry::vendorMap.find(vendorStr).value();
-		sepIndex += QString("://").length();
-		prevSepIndex = sepIndex;
-	} else {
-		// default value
-		vendor = U2DbiRegistry::DbVendor::MYSQL;
-		prevSepIndex = sepIndex = 0;
-	}
+    int sepIndex = dbiUrl.indexOf("://");
+    // handle previously written URL, without "vendor://"
+    int prevSepIndex = 0;
+    if (sepIndex > 0) {
+        QString vendorStr = dbiUrl.left(sepIndex);
+        // TODO: catch null
+        vendor = U2DbiRegistry::vendorMap.find(vendorStr).value();
+        sepIndex += QString("://").length();
+        prevSepIndex = sepIndex;
+    } else {
+        // default value
+        vendor = U2DbiRegistry::DbVendor::MYSQL;
+        prevSepIndex = sepIndex = 0;
+    }
 
-	sepIndex = dbiUrl.indexOf(":", sepIndex);
+    sepIndex = dbiUrl.indexOf(":", sepIndex);
     if (sepIndex < 0) {
         return false;
     }

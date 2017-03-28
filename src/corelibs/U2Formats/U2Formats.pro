@@ -70,6 +70,7 @@ HEADERS += src/ABIFormat.h \
            src/dbi/util/GenericSqlModificationAction.h \
            src/dbi/util/GenericSqlMultiTableAssemblyAdapter.h \
            src/dbi/util/GenericSqlSingleTableAssemblyAdapter.h \
+           src/dbi/util/upgraders/GenericSqlUpgrader.h \
            src/mysql_dbi/MysqlAssemblyDbi.h \
            src/mysql_dbi/MysqlAttributeDbi.h \
            src/mysql_dbi/MysqlCrossDatabaseReferenceDbi.h \
@@ -82,6 +83,7 @@ HEADERS += src/ABIFormat.h \
            src/mysql_dbi/MysqlSequenceDbi.h \
            src/mysql_dbi/MysqlUdrDbi.h \
            src/mysql_dbi/MysqlVariantDbi.h \
+           src/mysql_dbi/util/MysqlMultiTableAssemblyAdapter.h \
            src/mysql_dbi/util/MysqlSingleTableAssemblyAdapter.h \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_14_To_1_15.h \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_15_To_1_16.h \
@@ -116,9 +118,7 @@ HEADERS += src/ABIFormat.h \
            src/util/AssemblyAdapter.h \
            src/util/AssemblyPackAlgorithm.h \
            src/util/PairedFastqComparator.h \
-           src/util/SnpeffInfoParser.h \
-    src/mysql_dbi/util/MysqlMultiTableAssemblyAdapter.h \
-    src/dbi/util/upgraders/GenericSqlUpgrader.h
+           src/util/SnpeffInfoParser.h
 
 SOURCES += src/ABIFormat.cpp \
            src/AbstractVariationFormat.cpp \
@@ -187,6 +187,7 @@ SOURCES += src/ABIFormat.cpp \
            src/dbi/util/GenericSqlModificationAction.cpp \
            src/dbi/util/GenericSqlMultiTableAssemblyAdapter.cpp \
            src/dbi/util/GenericSqlSingleTableAssemblyAdapter.cpp \
+           src/dbi/util/upgraders/GenericSqlUpgrader.cpp \
            src/mysql_dbi/MysqlAssemblyDbi.cpp \
            src/mysql_dbi/MysqlAttributeDbi.cpp \
            src/mysql_dbi/MysqlCrossDatabaseReferenceDbi.cpp \
@@ -199,6 +200,7 @@ SOURCES += src/ABIFormat.cpp \
            src/mysql_dbi/MysqlSequenceDbi.cpp \
            src/mysql_dbi/MysqlUdrDbi.cpp \
            src/mysql_dbi/MysqlVariantDbi.cpp \
+           src/mysql_dbi/util/MysqlMultiTableAssemblyAdapter.cpp \
            src/mysql_dbi/util/MysqlSingleTableAssemblyAdapter.cpp \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_14_To_1_15.cpp \
            src/mysql_dbi/util/upgraders/MysqlUpgraderFrom_1_15_To_1_16.cpp \
@@ -232,9 +234,7 @@ SOURCES += src/ABIFormat.cpp \
            src/tasks/MysqlUpgradeTask.cpp \
            src/util/AssemblyPackAlgorithm.cpp \
            src/util/PairedFastqComparator.cpp \
-           src/util/SnpeffInfoParser.cpp \
-    src/mysql_dbi/util/MysqlMultiTableAssemblyAdapter.cpp \
-    src/dbi/util/upgraders/GenericSqlUpgrader.cpp
+           src/util/SnpeffInfoParser.cpp
 
 RESOURCES += U2Formats.qrc
 TRANSLATIONS += transl/english.ts \

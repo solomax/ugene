@@ -120,11 +120,11 @@ public:
     virtual void createByteArrayAttribute( U2ByteArrayAttribute &a, U2OpStatus &os );
 
 protected:
-	qint64 createAttribute(U2Attribute &attr, U2DataType type, U2OpStatus &os);
+    qint64 createAttribute(U2Attribute &attr, U2DataType type, U2OpStatus &os);
 
-	static QString buildSelectAttributeQuery(const QString &attributeTable);
+    static QString buildSelectAttributeQuery(const QString &attributeTable);
 
-	static void readAttribute(U2SqlQuery &q, U2Attribute &attr);
+    static void readAttribute(U2SqlQuery &q, U2Attribute &attr);
 };
 
 }   // namespace U2

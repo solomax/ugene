@@ -125,17 +125,17 @@ public:
     virtual void calculateCoverage(const U2DataId& assemblyId, const U2Region& region, U2AssemblyCoverageStat& coverage, U2OpStatus& os);
 
 protected:
-	virtual void addReads(GenericSqlAssemblyAdapter* a, U2DbiIterator<U2AssemblyRead>* it, U2AssemblyReadsImportInfo& ii, U2OpStatus& os);
+    virtual void addReads(GenericSqlAssemblyAdapter* a, U2DbiIterator<U2AssemblyRead>* it, U2AssemblyReadsImportInfo& ii, U2OpStatus& os);
 
-	virtual void removeTables(const U2DataId &assemblyId, U2OpStatus& os);
-	virtual void removeAssemblyEntry(const U2DataId &assemblyId, U2OpStatus& os);
-	virtual void correctAssemblyType(U2Assembly &assembly, U2OpStatus &os);
+    virtual void removeTables(const U2DataId &assemblyId, U2OpStatus& os);
+    virtual void removeAssemblyEntry(const U2DataId &assemblyId, U2OpStatus& os);
+    virtual void correctAssemblyType(U2Assembly &assembly, U2OpStatus &os);
 
-	/** Return assembly storage adapter for the given assembly */
+    /** Return assembly storage adapter for the given assembly */
     virtual GenericSqlAssemblyAdapter* getAdapter(const U2DataId& assemblyId, U2OpStatus& os) = 0;
 
-	/** Adapters by database assembly id */
-	QHash<qint64, GenericSqlAssemblyAdapter*> adaptersById;
+    /** Adapters by database assembly id */
+    QHash<qint64, GenericSqlAssemblyAdapter*> adaptersById;
 };
 
 }   // namespace U2

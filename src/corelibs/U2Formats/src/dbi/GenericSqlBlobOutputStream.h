@@ -27,7 +27,7 @@
 namespace U2 {
 
 class GenericSqlDbRef;
-	
+
 class GenericSqlBlobOutputStream : public OutputStream {
 public:
     GenericSqlBlobOutputStream(GenericSqlDbRef *db, const QByteArray &tableId, const QByteArray &columnId,

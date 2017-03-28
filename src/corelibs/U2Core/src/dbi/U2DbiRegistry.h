@@ -59,13 +59,13 @@ public:
     U2DbiRegistry(QObject *parent = NULL);
     ~U2DbiRegistry();
 
-	enum DbVendor {
-		MYSQL = 0,
-		ORACLE
-	};
-	// TODO: use Q_ENUMS or Q_ENUM to improve this
-	static const QMap<QString, DbVendor> vendorMap;
-	static const QMap<DbVendor, QString> vendorMapReverse;
+    enum DbVendor {
+        MYSQL = 0,
+        ORACLE
+    };
+    // TODO: use Q_ENUMS or Q_ENUM to improve this
+    static const QMap<QString, DbVendor> vendorMap;
+    static const QMap<DbVendor, QString> vendorMapReverse;
 
     virtual bool registerDbiFactory(U2DbiFactory *factory);
 
@@ -118,8 +118,8 @@ private:
     DbiConnection*                          sessionDbiConnection;
     bool                                    sessionDbiInitDone;
 
-	static QMap<QString, DbVendor> getVendorMap();
-	static QMap<DbVendor, QString> getVendorMapReverse();
+    static QMap<QString, DbVendor> getVendorMap();
+    static QMap<DbVendor, QString> getVendorMapReverse();
 };
 
 /**
