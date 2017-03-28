@@ -173,6 +173,10 @@ int MaEditor::getRowHeight() const {
     return fm.height() * zoomMult;
 }
 
+int MaEditor::getRowContentIndent(int) const {
+    return 0;
+}
+
 int MaEditor::getSequenceRowHeight() const {
     QFontMetrics fm(font, ui);
     return fm.height() * zoomMult;
@@ -345,6 +349,7 @@ void MaEditor::sl_changeFont() {
     }
     setFont(f);
     updateActions();
+    emit si_completeUpdate();
 }
 
 void MaEditor::sl_lockedStateChanged() {
@@ -428,7 +433,7 @@ void MaEditor::setFont(const QFont& f) {
     font = f;
     calcFontPixelToPointSizeCoef();
     font.setPointSize(qBound(MOBJECT_MIN_FONT_SIZE, pSize, MOBJECT_MAX_FONT_SIZE));
-    emit si_fontChanged(f);
+    emit si_fontChanged(font);
     saveFont(font);
 }
 

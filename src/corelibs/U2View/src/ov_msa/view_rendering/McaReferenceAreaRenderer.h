@@ -19,38 +19,40 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef _U2_EXPORT_MSA_2_MCA_TASK_H_
-#define _U2_EXPORT_MSA_2_MCA_TASK_H_
+#ifndef _U2_MCA_REFERENCE_AREA_RENDERER_H_
+#define _U2_MCA_REFERENCE_AREA_RENDERER_H_
 
-#include <U2Core/DNAChromatogram.h>
-#include <U2Core/DocumentProviderTask.h>
+#include "ov_sequence/view_rendering/PanViewRenderer.h"
 
 namespace U2 {
 
-class StateLocker;
-class MultipleSequenceAlignmentObject;
+class MaEditor;
 
-class ExportMsa2McaTask : public DocumentProviderTask {
-    Q_OBJECT
+class McaReferenceAreaRenderer : public PanViewRenderer {
 public:
-    ExportMsa2McaTask(MultipleSequenceAlignmentObject *msaObject, const QString &mcaFilePath);
-    ~ExportMsa2McaTask();
+    McaReferenceAreaRenderer(PanView *panView, SequenceObjectContext *ctx, MaEditor *maEditor);
+
+    qint64 getMinimumHeight() const;
+    float posToXCoordF(const qint64 position, const QSize &canvasSize, const U2Region &visibleRange) const;
+
+    void setFont(const QFont &font);
 
 private:
-    void prepare();
-    void run();
-    ReportResult report();
+    void drawSequence(QPainter &p, const QSize &canvasSize, const U2Region &region);
 
-    static DNAChromatogram generateChromatogram(const QString &name, const int length);
-    Document * prepareDocument();
+    MaEditor *maEditor;
+};
 
-    MultipleSequenceAlignmentObject *msaObject;
-    const QString mcaFilePath;
-    StateLocker *locker;
+class McaReferenceAreaRendererFactory : public PanViewRendererFactory {
+public:
+    McaReferenceAreaRendererFactory(MaEditor *maEditor);
 
-    static const int MAX_TRACE_VALUE;
+    McaReferenceAreaRenderer *createRenderer(PanView *panView) const;
+
+private:
+    MaEditor *maEditor;
 };
 
 }   // namespace U2
 
-#endif // _U2_EXPORT_MSA_2_MCA_TASK_H_
+#endif // _U2_MCA_REFERENCE_AREA_RENDERER_H_

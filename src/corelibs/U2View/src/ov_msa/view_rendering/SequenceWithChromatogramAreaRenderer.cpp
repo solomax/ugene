@@ -33,6 +33,7 @@
 namespace U2 {
 
 const int SequenceWithChromatogramAreaRenderer::INDENT_BETWEEN_ROWS = 15;
+const int SequenceWithChromatogramAreaRenderer::CHROMATOGRAM_MAX_HEIGHT = 100;
 const qreal SequenceWithChromatogramAreaRenderer::TRACE_OR_BC_LINES_DIVIDER = 2;
 
 SequenceWithChromatogramAreaRenderer::SequenceWithChromatogramAreaRenderer(McaEditorSequenceArea *seqAreaWgt)
@@ -209,6 +210,7 @@ void SequenceWithChromatogramAreaRenderer::drawChromatogramTrace(const DNAChroma
         prev = chroma.baseCalls[startPos] - prevStep / 2;
     }
     for (int i = startPos; i < visible.endPos(); i++) {
+        SAFE_POINT(i < chroma.baseCalls.length(), "Base calls array is too short: visible range index is out range", );
         int k = chroma.baseCalls[i];
         int pointsCount = k - prev;
 
@@ -324,6 +326,7 @@ void SequenceWithChromatogramAreaRenderer::drawChromatogramBaseCallsLines(const 
     int areaHeight = (heightPD - heightBC) * this->maxTraceHeight / 100;
     int colWidth = getSeqArea()->getEditor()->getColumnWidth();
     for (int i = visible.startPos; i < visible.startPos + visible.length; i++) {
+        SAFE_POINT(i < chroma.baseCalls.length(), "Base calls array is too short: visible range index is out range", );
         int temp = chroma.baseCalls[i];
         SAFE_POINT(temp <= chroma.traceLength, "Broken chromatogram data", );
 
